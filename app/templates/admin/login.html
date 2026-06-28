@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Admin Login - NexDam Motors{% endblock %}
+{% block content %}
+<div class="container admin-login">
+    <h1 class="section-title">Accesso amministratore</h1>
+    <form method="post" class="form-contatti">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required autofocus>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit" class="btn btn-primary">Accedi</button>
+    </form>
+</div>
+{% endblock %}

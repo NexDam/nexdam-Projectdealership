@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}NexDam Motors - Home{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="container hero-inner">
+        <h1>Trova l'auto giusta per te</h1>
+        <p>Vasta selezione di auto nuove e usate, controllate e garantite.</p>
+        <a href="{{ url_for('catalogo') }}" class="btn btn-primary">Vedi il catalogo</a>
+    </div>
+</section>
+
+<section class="container">
+    <h2 class="section-title">Auto in evidenza</h2>
+    <div class="car-grid">
+        {% for v in auto %}
+        <div class="car-card">
+            <img src="{{ url_for('static', filename='images/cars/' + v.immagine) }}" alt="{{ v.marca }} {{ v.modello }}" onerror="this.src='{{ url_for('static', filename='images/cars/default-car.svg') }}'">
+            <div class="car-card-body">
+                <h3>{{ v.marca }} {{ v.modello }}</h3>
+                <p class="car-meta">{{ v.anno }} &middot; {{ v.km }} km &middot; {{ v.carburante }}</p>
+                <p class="car-price">&euro; {{ "%.0f"|format(v.prezzo) }}</p>
+                <a href="{{ url_for('dettaglio_veicolo', veicolo_id=v.id) }}" class="btn btn-outline">Dettagli</a>
+            </div>
+        </div>
+        {% else %}
+        <p>Nessun veicolo disponibile al momento.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

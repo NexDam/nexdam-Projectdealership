@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Catalogo - NexDam Motors{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="section-title">Catalogo auto</h1>
+
+    <form class="filtri-form" method="get">
+        <select name="marca">
+            <option value="">Tutte le marche</option>
+            {% for m in marche %}
+            <option value="{{ m.marca }}" {% if filtri.marca == m.marca %}selected{% endif %}>{{ m.marca }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="carburante">
+            <option value="">Tutti i carburanti</option>
+            {% for c in ["Benzina","Diesel","Elettrica","Hybrid","GPL","Metano"] %}
+            <option value="{{ c }}" {% if filtri.carburante == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="number" name="prezzo_max" placeholder="Prezzo massimo" value="{{ filtri.prezzo_max }}">
+
+        <button type="submit" class="btn btn-primary">Filtra</button>
+        <a href="{{ url_for('catalogo') }}" class="btn btn-outline">Reset</a>
+    </form>
+
+    <div class="car-grid">
+        {% for v in veicoli %}
+        <div class="car-card">
+            <img src="{{ url_for('static', filename='images/cars/' + v.immagine) }}" alt="{{ v.marca }} {{ v.modello }}" onerror="this.src='{{ url_for('static', filename='images/cars/default-car.svg') }}'">
+            <div class="car-card-body">
+                <h3>{{ v.marca }} {{ v.modello }}</h3>
+                <p class="car-meta">{{ v.anno }} &middot; {{ v.km }} km &middot; {{ v.carburante }} &middot; {{ v.cambio }}</p>
+                <p class="car-price">&euro; {{ "%.0f"|format(v.prezzo) }}</p>
+                <a href="{{ url_for('dettaglio_veicolo', veicolo_id=v.id) }}" class="btn btn-outline">Dettagli</a>
+            </div>
+        </div>
+        {% else %}
+        <p>Nessun veicolo trovato con questi filtri.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

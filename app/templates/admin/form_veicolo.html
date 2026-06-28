@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ "Modifica" if veicolo else "Nuovo" }} veicolo - Admin{% endblock %}
+{% block content %}
+<div class="container admin-form">
+    <h1 class="section-title">{{ "Modifica veicolo" if veicolo else "Nuovo veicolo" }}</h1>
+
+    <form method="post" class="form-contatti">
+        <label for="marca">Marca *</label>
+        <input type="text" id="marca" name="marca" value="{{ veicolo.marca if veicolo else '' }}" required>
+
+        <label for="modello">Modello *</label>
+        <input type="text" id="modello" name="modello" value="{{ veicolo.modello if veicolo else '' }}" required>
+
+        <label for="anno">Anno *</label>
+        <input type="number" id="anno" name="anno" value="{{ veicolo.anno if veicolo else '' }}" required min="1950" max="2030">
+
+        <label for="prezzo">Prezzo (&euro;) *</label>
+        <input type="number" id="prezzo" name="prezzo" step="0.01" value="{{ veicolo.prezzo if veicolo else '' }}" required>
+
+        <label for="km">Chilometraggio</label>
+        <input type="number" id="km" name="km" value="{{ veicolo.km if veicolo else 0 }}">
+
+        <label for="carburante">Carburante *</label>
+        <select id="carburante" name="carburante" required>
+            {% for c in ["Benzina","Diesel","Elettrica","Hybrid","GPL","Metano"] %}
+            <option value="{{ c }}" {% if veicolo and veicolo.carburante == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="cambio">Cambio *</label>
+        <select id="cambio" name="cambio" required>
+            {% for c in ["Manuale","Automatico"] %}
+            <option value="{{ c }}" {% if veicolo and veicolo.cambio == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="colore">Colore</label>
+        <input type="text" id="colore" name="colore" value="{{ veicolo.colore if veicolo else '' }}">
+
+        <label for="descrizione">Descrizione</label>
+        <textarea id="descrizione" name="descrizione" rows="4">{{ veicolo.descrizione if veicolo else '' }}</textarea>
+
+        <label class="checkbox-label">
+            <input type="checkbox" name="disponibile" {% if not veicolo or veicolo.disponibile %}checked{% endif %}>
+            Disponibile alla vendita
+        </label>
+
+        <button type="submit" class="btn btn-primary">Salva</button>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">Annulla</a>
+    </form>
+</div>
+{% endblock %}

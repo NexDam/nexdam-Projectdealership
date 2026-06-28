@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Admin - NexDam Motors{% endblock %}
+{% block content %}
+<div class="container admin-dashboard">
+    <div class="admin-header">
+        <h1 class="section-title">Pannello amministrazione</h1>
+        <a href="{{ url_for('admin_logout') }}" class="btn btn-outline">Esci</a>
+    </div>
+
+    <div class="admin-actions">
+        <a href="{{ url_for('admin_nuovo_veicolo') }}" class="btn btn-primary">+ Nuovo veicolo</a>
+    </div>
+
+    <h2>Veicoli</h2>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Marca/Modello</th>
+                <th>Anno</th>
+                <th>Prezzo</th>
+                <th>Stato</th>
+                <th>Azioni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in veicoli %}
+            <tr>
+                <td>{{ v.marca }} {{ v.modello }}</td>
+                <td>{{ v.anno }}</td>
+                <td>&euro; {{ "%.0f"|format(v.prezzo) }}</td>
+                <td>{{ "Disponibile" if v.disponibile else "Venduto" }}</td>
+                <td class="admin-table-actions">
+                    <a href="{{ url_for('admin_modifica_veicolo', veicolo_id=v.id) }}" class="btn btn-outline btn-sm">Modifica</a>
+                    <form method="post" action="{{ url_for('admin_elimina_veicolo', veicolo_id=v.id) }}" onsubmit="return confirm('Eliminare questo veicolo?');" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Elimina</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5">Nessun veicolo presente.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Richieste di contatto recenti</h2>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Telefono</th>
+                <th>Veicolo</th>
+                <th>Messaggio</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in richieste %}
+            <tr>
+                <td>{{ r.nome }}</td>
+                <td>{{ r.email }}</td>
+                <td>{{ r.telefono or "-" }}</td>
+                <td>{% if r.marca %}{{ r.marca }} {{ r.modello }}{% else %}-{% endif %}</td>
+                <td>{{ r.messaggio }}</td>
+                <td>{{ r.creato_il }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6">Nessuna richiesta ricevuta.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

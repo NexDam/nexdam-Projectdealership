@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Contatti - NexDam Motors{% endblock %}
+{% block content %}
+<div class="container contatti-page">
+    <h1 class="section-title">Contattaci</h1>
+
+    {% if veicolo %}
+    <p class="info-veicolo">Richiesta per: <strong>{{ veicolo.marca }} {{ veicolo.modello }} ({{ veicolo.anno }})</strong></p>
+    {% endif %}
+
+    <form method="post" class="form-contatti" novalidate>
+        {% if veicolo %}
+        <input type="hidden" name="veicolo_id" value="{{ veicolo.id }}">
+        {% endif %}
+
+        <label for="nome">Nome e cognome *</label>
+        <input type="text" id="nome" name="nome" required>
+
+        <label for="email">Email *</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="telefono">Telefono</label>
+        <input type="tel" id="telefono" name="telefono">
+
+        <label for="messaggio">Messaggio *</label>
+        <textarea id="messaggio" name="messaggio" rows="5" required></textarea>
+
+        <button type="submit" class="btn btn-primary">Invia richiesta</button>
+    </form>
+
+    <div class="contatti-info">
+        <h2>Dove siamo</h2>
+        <p>Via Roma 1, Milano (MI)</p>
+        <p>Tel: 02 1234567 &mdash; Email: info@nexdammotors.it</p>
+        <p>Orari: Lun-Sab 9:00-19:00</p>
+    </div>
+</div>
+{% endblock %}

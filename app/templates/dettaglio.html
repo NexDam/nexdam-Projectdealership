@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ veicolo.marca }} {{ veicolo.modello }} - NexDam Motors{% endblock %}
+{% block content %}
+<div class="container dettaglio-veicolo">
+    <a href="{{ url_for('catalogo') }}" class="back-link">&larr; Torna al catalogo</a>
+
+    <div class="dettaglio-grid">
+        <img src="{{ url_for('static', filename='images/cars/' + veicolo.immagine) }}" alt="{{ veicolo.marca }} {{ veicolo.modello }}" onerror="this.src='{{ url_for('static', filename='images/cars/default-car.svg') }}'">
+
+        <div class="dettaglio-info">
+            <h1>{{ veicolo.marca }} {{ veicolo.modello }}</h1>
+            <p class="car-price">&euro; {{ "%.0f"|format(veicolo.prezzo) }}</p>
+
+            <ul class="specs-list">
+                <li><strong>Anno:</strong> {{ veicolo.anno }}</li>
+                <li><strong>Chilometraggio:</strong> {{ veicolo.km }} km</li>
+                <li><strong>Carburante:</strong> {{ veicolo.carburante }}</li>
+                <li><strong>Cambio:</strong> {{ veicolo.cambio }}</li>
+                <li><strong>Colore:</strong> {{ veicolo.colore or "N/D" }}</li>
+                <li><strong>Disponibilita:</strong> {{ "Disponibile" if veicolo.disponibile else "Venduto" }}</li>
+            </ul>
+
+            <p class="descrizione">{{ veicolo.descrizione }}</p>
+
+            {% if veicolo.disponibile %}
+            <a href="{{ url_for('contatti', veicolo_id=veicolo.id) }}" class="btn btn-primary">Richiedi informazioni</a>
+            {% else %}
+            <span class="badge-venduto">Veicolo non disponibile</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
