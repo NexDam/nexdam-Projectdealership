@@ -70,7 +70,7 @@ L'app sarà disponibile su **http://localhost:5000**
 
 ## Note
 
-- Le immagini dei veicoli vanno inserite in `app/static/images/cars/`; il nome del file va poi scritto nella colonna `immagine` della tabella `veicoli`. Se il campo e vuoto o il file non esiste viene mostrato il placeholder `default-car.webp`.
+- Le foto dei veicoli si caricano direttamente dal form dell'area admin (WEBP, JPG o PNG, massimo 4 MB). Vengono salvate in `app/static/images/cars/` con un nome sanificato; se esiste gia un file con lo stesso nome viene aggiunto un suffisso numerico invece di sovrascriverlo. In modifica, lasciando vuoto il campo si mantiene l'immagine attuale. Se un veicolo non ha immagine, o il file risulta mancante, viene mostrato il placeholder `default-car.webp`.
 - Il database va sempre avviato tramite il modulo MySQL di XAMPP prima di lanciare `app.py`.
 
 ## Contenuti dimostrativi
