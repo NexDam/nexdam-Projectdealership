@@ -70,5 +70,13 @@ L'app sarà disponibile su **http://localhost:5000**
 
 ## Note
 
-- Le immagini dei veicoli vanno inserite in `app/static/images/cars/`; se un veicolo non ha un'immagine specifica viene mostrato un placeholder (`default-car.svg`).
+- Le immagini dei veicoli vanno inserite in `app/static/images/cars/`; il nome del file va poi scritto nella colonna `immagine` della tabella `veicoli`. Se il campo e vuoto o il file non esiste viene mostrato il placeholder `default-car.webp`.
 - Il database va sempre avviato tramite il modulo MySQL di XAMPP prima di lanciare `app.py`.
+
+## Contenuti dimostrativi
+
+Questo e un progetto **dimostrativo**: non esiste nessuna concessionaria "NexDam Motors".
+
+- I veicoli del catalogo, i prezzi e i marchi (Nexa, Verta, Aureus, Volta, Kaido, Kestrel) sono **inventati**.
+- Le fotografie in `app/static/images/` sono **generate con AI** (modello `z_image` via Higgsfield) e non ritraggono veicoli reali.
+- Anche i recapiti nella pagina Contatti sono di fantasia.

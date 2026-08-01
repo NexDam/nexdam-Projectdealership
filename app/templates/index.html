@@ -2,28 +2,64 @@
 {% block title %}NexDam Motors - Home{% endblock %}
 {% block content %}
 <section class="hero">
-    <div class="container hero-inner">
-        <h1>Trova l'auto giusta per te</h1>
-        <p>Vasta selezione di auto nuove e usate, controllate e garantite.</p>
-        <a href="{{ url_for('catalogo') }}" class="btn btn-primary">Vedi il catalogo</a>
+    <div class="container">
+        <div class="hero-inner">
+            <span class="hero-eyebrow">Concessionaria multimarca</span>
+            <h1>Trova l'auto giusta per te</h1>
+            <p>Vasta selezione di auto nuove e usate, controllate in 120 punti e garantite 24 mesi. Prezzi trasparenti, nessuna sorpresa.</p>
+            <div class="hero-actions">
+                <a href="{{ url_for('catalogo') }}" class="btn btn-primary">Vedi il catalogo</a>
+                <a href="{{ url_for('contatti') }}" class="btn btn-outline">Parla con noi</a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <strong>120</strong>
+                    <span>punti di controllo</span>
+                </div>
+                <div class="hero-stat">
+                    <strong>24 mesi</strong>
+                    <span>di garanzia</span>
+                </div>
+                <div class="hero-stat">
+                    <strong>Lun-Sab</strong>
+                    <span>9:00 - 19:00</span>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
 <section class="container">
-    <h2 class="section-title">Auto in evidenza</h2>
+    <div class="section-head">
+        <div>
+            <h2 class="section-title">Auto in evidenza</h2>
+            <p class="section-sub">Gli ultimi veicoli arrivati in concessionaria.</p>
+        </div>
+        <a href="{{ url_for('catalogo') }}" class="btn btn-outline btn-sm">Tutto il catalogo</a>
+    </div>
+
     <div class="car-grid">
         {% for v in auto %}
-        <div class="car-card">
-            <img src="{{ url_for('static', filename='images/cars/' + v.immagine) }}" alt="{{ v.marca }} {{ v.modello }}" onerror="this.src='{{ url_for('static', filename='images/cars/default-car.svg') }}'">
+        <article class="car-card">
+            <div class="car-card-media">
+                <img src="{{ url_for('static', filename='images/cars/' + (v.immagine or 'default-car.webp')) }}"
+                     alt="{{ v.marca }} {{ v.modello }}" loading="lazy" width="800" height="600"
+                     onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/cars/default-car.webp') }}'">
+                <span class="car-badge">{{ v.carburante }}</span>
+            </div>
             <div class="car-card-body">
                 <h3>{{ v.marca }} {{ v.modello }}</h3>
-                <p class="car-meta">{{ v.anno }} &middot; {{ v.km }} km &middot; {{ v.carburante }}</p>
-                <p class="car-price">&euro; {{ "%.0f"|format(v.prezzo) }}</p>
+                <p class="car-meta">
+                    <span>{{ v.anno }}</span>
+                    <span>{{ "{:,.0f}".format(v.km).replace(",", ".") }} km</span>
+                    <span>{{ v.cambio }}</span>
+                </p>
+                <p class="car-price">&euro; {{ "{:,.0f}".format(v.prezzo).replace(",", ".") }}</p>
                 <a href="{{ url_for('dettaglio_veicolo', veicolo_id=v.id) }}" class="btn btn-outline">Dettagli</a>
             </div>
-        </div>
+        </article>
         {% else %}
-        <p>Nessun veicolo disponibile al momento.</p>
+        <p class="empty-state">Nessun veicolo disponibile al momento.</p>
         {% endfor %}
     </div>
 </section>

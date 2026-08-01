@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS veicoli (
     cambio ENUM('Manuale','Automatico') NOT NULL,
     colore VARCHAR(50),
     descrizione TEXT,
-    immagine VARCHAR(255) DEFAULT 'default-car.svg',
+    immagine VARCHAR(255) DEFAULT 'default-car.webp',
     disponibile TINYINT(1) NOT NULL DEFAULT 1,
     creato_il TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -42,10 +42,12 @@ CREATE TABLE IF NOT EXISTS admin (
 -- (l'hash viene generato dallo script seed.py, non inserirlo qui a mano)
 
 -- Dati di esempio
+-- I marchi sono di fantasia: si tratta di un progetto dimostrativo, non di un
+-- listino reale. Le foto in app/static/images/cars/ sono generate con AI.
 INSERT INTO veicoli (marca, modello, anno, prezzo, km, carburante, cambio, colore, descrizione, immagine, disponibile) VALUES
-('Fiat', 'Panda', 2021, 11900.00, 32000, 'Benzina', 'Manuale', 'Bianco', 'Fiat Panda in ottime condizioni, unico proprietario, tagliandi regolari.', 'default-car.svg', 1),
-('Volkswagen', 'Golf', 2020, 18500.00, 45000, 'Diesel', 'Manuale', 'Grigio', 'VW Golf 8, full optional, gomme nuove, perfetta per uso quotidiano.', 'default-car.svg', 1),
-('Audi', 'A4', 2019, 24900.00, 60000, 'Diesel', 'Automatico', 'Nero', 'Audi A4 Avant, interni in pelle, navigatore, cruise control adattivo.', 'default-car.svg', 1),
-('Tesla', 'Model 3', 2022, 38900.00, 15000, 'Elettrica', 'Automatico', 'Bianco', 'Tesla Model 3 Long Range, autopilota incluso, garanzia ancora valida.', 'default-car.svg', 1),
-('Toyota', 'Yaris', 2021, 15900.00, 28000, 'Hybrid', 'Automatico', 'Rosso', 'Toyota Yaris Hybrid, bassi consumi, ideale per la citta.', 'default-car.svg', 1),
-('BMW', 'Serie 3', 2018, 22500.00, 78000, 'Diesel', 'Automatico', 'Blu', 'BMW Serie 3 Touring, pacchetto Sport, sensori di parcheggio.', 'default-car.svg', 0);
+('Nexa', 'Aria', 2021, 11900.00, 32000, 'Benzina', 'Manuale', 'Bianco', 'Citycar compatta in ottime condizioni, unico proprietario, tagliandi regolari. Ideale per chi si muove in citta e cerca bassi consumi.', 'nexa-aria.webp', 1),
+('Verta', 'GT Line', 2020, 18500.00, 45000, 'Diesel', 'Manuale', 'Grigio', 'Berlina compatta full optional, gomme nuove, cerchi in lega da 18 pollici. Perfetta per uso quotidiano e viaggi lunghi.', 'verta-gt.webp', 1),
+('Aureus', 'Corso SW', 2019, 24900.00, 60000, 'Diesel', 'Automatico', 'Nero', 'Station wagon executive con interni in pelle, navigatore, cruise control adattivo e ampio bagagliaio.', 'aureus-corso.webp', 1),
+('Volta', 'E3', 2022, 38900.00, 15000, 'Elettrica', 'Automatico', 'Bianco', 'Berlina elettrica ad autonomia estesa, ricarica rapida, guida assistita e garanzia batteria ancora valida.', 'volta-e3.webp', 1),
+('Kaido', 'Yura', 2021, 15900.00, 28000, 'Hybrid', 'Automatico', 'Rosso', 'Utilitaria ibrida dai consumi ridottissimi, cambio automatico fluido, ideale per il traffico urbano.', 'kaido-yura.webp', 1),
+('Kestrel', 'Sport Wagon', 2018, 22500.00, 78000, 'Diesel', 'Automatico', 'Blu', 'Wagon sportiva con pacchetto Sport, sensori di parcheggio e assetto ribassato. Grande spazio senza rinunciare al piacere di guida.', 'kestrel-sw.webp', 0);
