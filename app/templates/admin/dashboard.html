@@ -58,7 +58,12 @@
         </table>
     </div>
 
-    <h2 class="section-title">Richieste di contatto recenti</h2>
+    <div class="section-head">
+        <h2 class="section-title">
+            Richieste di contatto recenti
+            {% if non_lette %}<span class="contatore-non-lette">{{ non_lette }} da leggere</span>{% endif %}
+        </h2>
+    </div>
     <div class="table-wrap">
         <table class="admin-table">
             <thead>
@@ -69,20 +74,34 @@
                     <th>Veicolo</th>
                     <th>Messaggio</th>
                     <th>Data</th>
+                    <th>Stato</th>
                 </tr>
             </thead>
             <tbody>
                 {% for r in richieste %}
-                <tr>
+                <tr class="{{ 'riga-non-letta' if not r.letto }}">
                     <td>{{ r.nome }}</td>
                     <td><a href="mailto:{{ r.email }}">{{ r.email }}</a></td>
                     <td>{{ r.telefono or "-" }}</td>
                     <td>{% if r.marca %}{{ r.marca }} {{ r.modello }}{% else %}-{% endif %}</td>
                     <td><div class="cell-msg">{{ r.messaggio }}</div></td>
                     <td>{{ r.creato_il.strftime("%d/%m/%Y %H:%M") if r.creato_il else "-" }}</td>
+                    <td>
+                        <form method="post" action="{{ url_for('admin_segna_richiesta', richiesta_id=r.id) }}">
+                            {% if r.letto %}
+                            <button type="submit" class="btn btn-outline btn-sm" title="Rimetti tra le da leggere">
+                                Letta
+                            </button>
+                            {% else %}
+                            <button type="submit" class="btn btn-primary btn-sm" title="Segna come letta">
+                                Segna letta
+                            </button>
+                            {% endif %}
+                        </form>
+                    </td>
                 </tr>
                 {% else %}
-                <tr><td colspan="6">Nessuna richiesta ricevuta.</td></tr>
+                <tr><td colspan="7">Nessuna richiesta ricevuta.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

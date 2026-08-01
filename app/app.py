@@ -139,7 +139,33 @@ def admin_dashboard():
         "SELECT r.*, v.marca, v.modello FROM richieste_contatto r "
         "LEFT JOIN veicoli v ON v.id = r.veicolo_id ORDER BY r.creato_il DESC LIMIT 20"
     )
-    return render_template("admin/dashboard.html", veicoli=veicoli, richieste=richieste)
+    non_lette = query(
+        "SELECT COUNT(*) AS n FROM richieste_contatto WHERE letto = 0", fetchone=True
+    )["n"]
+    return render_template(
+        "admin/dashboard.html", veicoli=veicoli, richieste=richieste, non_lette=non_lette
+    )
+
+
+@app.route("/admin/richiesta/<int:richiesta_id>/letto", methods=["POST"])
+@login_required
+def admin_segna_richiesta(richiesta_id):
+    richiesta = query(
+        "SELECT letto FROM richieste_contatto WHERE id = %s", (richiesta_id,), fetchone=True
+    )
+    if not richiesta:
+        flash("Richiesta non trovata.", "error")
+        return redirect(url_for("admin_dashboard"))
+
+    nuovo_stato = 0 if richiesta["letto"] else 1
+    execute(
+        "UPDATE richieste_contatto SET letto = %s WHERE id = %s", (nuovo_stato, richiesta_id)
+    )
+    flash(
+        "Richiesta segnata come letta." if nuovo_stato else "Richiesta rimessa tra le da leggere.",
+        "success",
+    )
+    return redirect(url_for("admin_dashboard"))
 
 
 @app.route("/admin/veicolo/nuovo", methods=["GET", "POST"])
