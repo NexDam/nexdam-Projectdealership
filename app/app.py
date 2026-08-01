@@ -4,6 +4,7 @@ from functools import wraps
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import check_password_hash
+from werkzeug.utils import secure_filename
 
 load_dotenv()
 
@@ -11,6 +12,12 @@ from db import query, execute  # noqa: E402
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
+
+# Upload delle foto dei veicoli
+IMMAGINE_DEFAULT = "default-car.webp"
+ESTENSIONI_IMMAGINE = {".webp", ".jpg", ".jpeg", ".png"}
+MAX_UPLOAD_MB = 4
+app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_MB * 1024 * 1024
 
 
 def login_required(view):
@@ -169,7 +176,54 @@ def admin_elimina_veicolo(veicolo_id):
     return redirect(url_for("admin_dashboard"))
 
 
+def _cartella_immagini():
+    return os.path.join(app.static_folder, "images", "cars")
+
+
+def _salva_immagine(file_caricato):
+    """Salva la foto caricata e ne restituisce il nome file.
+
+    Restituisce None se non e stato caricato nulla o se il file e stato
+    rifiutato; in quel caso il chiamante mantiene l'immagine precedente.
+    """
+    if not file_caricato or not file_caricato.filename:
+        return None
+
+    nome = secure_filename(file_caricato.filename)
+    estensione = os.path.splitext(nome)[1].lower()
+    if not nome or estensione not in ESTENSIONI_IMMAGINE:
+        flash(
+            "Formato immagine non supportato: sono ammessi WEBP, JPG e PNG. "
+            "L'immagine precedente e stata mantenuta.",
+            "error",
+        )
+        return None
+
+    cartella = _cartella_immagini()
+    os.makedirs(cartella, exist_ok=True)
+
+    # Non sovrascrivere un file gia presente: aggiunge un suffisso numerico.
+    base = os.path.splitext(nome)[0]
+    definitivo = nome
+    contatore = 1
+    while os.path.exists(os.path.join(cartella, definitivo)):
+        definitivo = f"{base}-{contatore}{estensione}"
+        contatore += 1
+
+    file_caricato.save(os.path.join(cartella, definitivo))
+    return definitivo
+
+
 def _salva_veicolo(veicolo_id=None):
+    immagine = _salva_immagine(request.files.get("immagine"))
+    if immagine is None and veicolo_id:
+        precedente = query(
+            "SELECT immagine FROM veicoli WHERE id = %s", (veicolo_id,), fetchone=True
+        )
+        immagine = precedente["immagine"] if precedente else None
+    if immagine is None:
+        immagine = IMMAGINE_DEFAULT
+
     dati = (
         request.form.get("marca", "").strip(),
         request.form.get("modello", "").strip(),
@@ -180,22 +234,30 @@ def _salva_veicolo(veicolo_id=None):
         request.form.get("cambio"),
         request.form.get("colore", "").strip(),
         request.form.get("descrizione", "").strip(),
+        immagine,
         1 if request.form.get("disponibile") == "on" else 0,
     )
 
     if veicolo_id:
         execute(
             "UPDATE veicoli SET marca=%s, modello=%s, anno=%s, prezzo=%s, km=%s, "
-            "carburante=%s, cambio=%s, colore=%s, descrizione=%s, disponibile=%s "
-            "WHERE id=%s",
+            "carburante=%s, cambio=%s, colore=%s, descrizione=%s, immagine=%s, "
+            "disponibile=%s WHERE id=%s",
             dati + (veicolo_id,),
         )
     else:
         execute(
             "INSERT INTO veicoli (marca, modello, anno, prezzo, km, carburante, cambio, "
-            "colore, descrizione, disponibile) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+            "colore, descrizione, immagine, disponibile) "
+            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
             dati,
         )
+
+
+@app.errorhandler(413)
+def immagine_troppo_grande(_):
+    flash(f"Immagine troppo grande: il limite e {MAX_UPLOAD_MB} MB.", "error")
+    return redirect(url_for("admin_dashboard")), 302
 
 
 if __name__ == "__main__":

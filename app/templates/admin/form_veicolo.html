@@ -4,7 +4,7 @@
 <div class="container admin-form">
     <h1 class="section-title">{{ "Modifica veicolo" if veicolo else "Nuovo veicolo" }}</h1>
 
-    <form method="post" class="form-contatti">
+    <form method="post" class="form-contatti" enctype="multipart/form-data">
         <label for="marca">Marca *</label>
         <input type="text" id="marca" name="marca" value="{{ veicolo.marca if veicolo else '' }}" required>
 
@@ -39,6 +39,21 @@
 
         <label for="descrizione">Descrizione</label>
         <textarea id="descrizione" name="descrizione" rows="4">{{ veicolo.descrizione if veicolo else '' }}</textarea>
+
+        <label for="immagine">Foto del veicolo</label>
+        {% if veicolo %}
+        <div class="immagine-attuale">
+            <img src="{{ url_for('static', filename='images/cars/' + (veicolo.immagine or 'default-car.webp')) }}"
+                 alt="Immagine attuale"
+                 onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/cars/default-car.webp') }}'">
+            <span>Attuale: <code>{{ veicolo.immagine or 'default-car.webp' }}</code></span>
+        </div>
+        {% endif %}
+        <input type="file" id="immagine" name="immagine" accept=".webp,.jpg,.jpeg,.png">
+        <small class="campo-hint">
+            WEBP, JPG o PNG, massimo 4 MB.
+            {%- if veicolo %} Lascia vuoto per mantenere l'immagine attuale.{% endif %}
+        </small>
 
         <label class="checkbox-label">
             <input type="checkbox" name="disponibile" {% if not veicolo or veicolo.disponibile %}checked{% endif %}>
