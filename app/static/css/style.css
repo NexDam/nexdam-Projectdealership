@@ -675,6 +675,28 @@ section .btn-outline:hover,
 .admin-table tbody tr.riga-non-letta .cell-msg { color: var(--color-text); }
 .admin-table td form { margin: 0; }
 
+/* Paginazione */
+.paginazione {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: -24px 0 44px;
+    flex-wrap: wrap;
+}
+.paginazione-stato {
+    color: var(--color-muted);
+    font-size: 0.88rem;
+    font-weight: 600;
+    min-width: 130px;
+    text-align: center;
+}
+.paginazione .disabilitato {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 /* ---------- Footer ---------- */
 .site-footer {
     background: var(--color-primary-dark);

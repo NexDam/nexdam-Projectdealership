@@ -19,6 +19,9 @@ ESTENSIONI_IMMAGINE = {".webp", ".jpg", ".jpeg", ".png"}
 MAX_UPLOAD_MB = 4
 app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_MB * 1024 * 1024
 
+# Richieste di contatto mostrate per pagina nella dashboard
+RICHIESTE_PER_PAGINA = 20
+
 
 def login_required(view):
     @wraps(view)
@@ -131,31 +134,62 @@ def admin_logout():
     return redirect(url_for("admin_login"))
 
 
+def _numero_pagina(valore):
+    """Converte in intero il numero di pagina, tollerando valori assenti o non validi."""
+    try:
+        return max(1, int(valore))
+    except (TypeError, ValueError):
+        return 1
+
+
 @app.route("/admin")
 @login_required
 def admin_dashboard():
     veicoli = query("SELECT * FROM veicoli ORDER BY creato_il DESC")
+
+    totale = query("SELECT COUNT(*) AS n FROM richieste_contatto", fetchone=True)["n"]
+    pagine_totali = max(1, -(-totale // RICHIESTE_PER_PAGINA))  # divisione arrotondata per eccesso
+    pagina = min(_numero_pagina(request.args.get("pagina")), pagine_totali)
+    offset = (pagina - 1) * RICHIESTE_PER_PAGINA
+
     richieste = query(
         "SELECT r.*, v.marca, v.modello FROM richieste_contatto r "
-        "LEFT JOIN veicoli v ON v.id = r.veicolo_id ORDER BY r.creato_il DESC LIMIT 20"
+        "LEFT JOIN veicoli v ON v.id = r.veicolo_id "
+        "ORDER BY r.creato_il DESC LIMIT %s OFFSET %s",
+        (RICHIESTE_PER_PAGINA, offset),
     )
     non_lette = query(
         "SELECT COUNT(*) AS n FROM richieste_contatto WHERE letto = 0", fetchone=True
     )["n"]
+
     return render_template(
-        "admin/dashboard.html", veicoli=veicoli, richieste=richieste, non_lette=non_lette
+        "admin/dashboard.html",
+        veicoli=veicoli,
+        richieste=richieste,
+        non_lette=non_lette,
+        pagina=pagina,
+        pagine_totali=pagine_totali,
+        totale_richieste=totale,
+        primo=offset + 1,
+        ultimo=offset + len(richieste),
     )
 
 
 @app.route("/admin/richiesta/<int:richiesta_id>/letto", methods=["POST"])
 @login_required
 def admin_segna_richiesta(richiesta_id):
+    # Torna alla pagina da cui si e arrivati, non sempre alla prima.
+    pagina = _numero_pagina(request.form.get("pagina"))
+    ritorno = url_for(
+        "admin_dashboard", pagina=pagina if pagina > 1 else None, _anchor="richieste"
+    )
+
     richiesta = query(
         "SELECT letto FROM richieste_contatto WHERE id = %s", (richiesta_id,), fetchone=True
     )
     if not richiesta:
         flash("Richiesta non trovata.", "error")
-        return redirect(url_for("admin_dashboard"))
+        return redirect(ritorno)
 
     nuovo_stato = 0 if richiesta["letto"] else 1
     execute(
@@ -165,7 +199,7 @@ def admin_segna_richiesta(richiesta_id):
         "Richiesta segnata come letta." if nuovo_stato else "Richiesta rimessa tra le da leggere.",
         "success",
     )
-    return redirect(url_for("admin_dashboard"))
+    return redirect(ritorno)
 
 
 @app.route("/admin/veicolo/nuovo", methods=["GET", "POST"])
