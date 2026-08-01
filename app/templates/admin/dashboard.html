@@ -58,11 +58,19 @@
         </table>
     </div>
 
-    <div class="section-head">
-        <h2 class="section-title">
-            Richieste di contatto recenti
-            {% if non_lette %}<span class="contatore-non-lette">{{ non_lette }} da leggere</span>{% endif %}
-        </h2>
+    <div class="section-head" id="richieste">
+        <div>
+            <h2 class="section-title">
+                Richieste di contatto
+                {% if non_lette %}<span class="contatore-non-lette">{{ non_lette }} da leggere</span>{% endif %}
+            </h2>
+            {% if totale_richieste %}
+            <p class="section-sub">
+                {{ primo }}-{{ ultimo }} di {{ totale_richieste }}
+                {%- if pagine_totali > 1 %} &middot; pagina {{ pagina }} di {{ pagine_totali }}{% endif %}
+            </p>
+            {% endif %}
+        </div>
     </div>
     <div class="table-wrap">
         <table class="admin-table">
@@ -88,6 +96,7 @@
                     <td>{{ r.creato_il.strftime("%d/%m/%Y %H:%M") if r.creato_il else "-" }}</td>
                     <td>
                         <form method="post" action="{{ url_for('admin_segna_richiesta', richiesta_id=r.id) }}">
+                            <input type="hidden" name="pagina" value="{{ pagina }}">
                             {% if r.letto %}
                             <button type="submit" class="btn btn-outline btn-sm" title="Rimetti tra le da leggere">
                                 Letta
@@ -106,5 +115,27 @@
             </tbody>
         </table>
     </div>
+
+    {% if pagine_totali > 1 %}
+    <nav class="paginazione" aria-label="Navigazione richieste">
+        {% if pagina > 1 %}
+        <a class="btn btn-outline btn-sm"
+           href="{{ url_for('admin_dashboard', pagina=pagina - 1 if pagina > 2 else None, _anchor='richieste') }}"
+           rel="prev">&larr; Precedenti</a>
+        {% else %}
+        <span class="btn btn-outline btn-sm disabilitato" aria-disabled="true">&larr; Precedenti</span>
+        {% endif %}
+
+        <span class="paginazione-stato">Pagina {{ pagina }} di {{ pagine_totali }}</span>
+
+        {% if pagina < pagine_totali %}
+        <a class="btn btn-outline btn-sm"
+           href="{{ url_for('admin_dashboard', pagina=pagina + 1, _anchor='richieste') }}"
+           rel="next">Successive &rarr;</a>
+        {% else %}
+        <span class="btn btn-outline btn-sm disabilitato" aria-disabled="true">Successive &rarr;</span>
+        {% endif %}
+    </nav>
+    {% endif %}
 </div>
 {% endblock %}
