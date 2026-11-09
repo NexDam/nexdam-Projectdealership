@@ -321,4 +321,5 @@ def immagine_troppo_grande(_):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    debug_mode = os.environ.get("FLASK_DEBUG", "").strip().lower() in {"1", "true", "yes", "on"}
+    app.run(debug=debug_mode, port=5000)
